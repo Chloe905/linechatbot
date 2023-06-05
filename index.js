@@ -43,11 +43,12 @@ async function handleEvent(event) {
   }
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt: event.message.text
+    prompt: event.message.text,
+    max_tokens: 200,
   })
   console.log(completion.data.choices[0].text)
   // create a echoing text message
-  const echo = { type: 'text', text: completion.data.choices[0].text }
+  const echo = { type: 'text', text: completion.data.choices[0].text.trim() }
 
   // use reply API
   return client.replyMessage(event.replyToken, echo)
