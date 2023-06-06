@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+
 const express = require('express')
 const line = require('@line/bot-sdk')
 const { Configuration, OpenAIApi } = require("openai")
@@ -19,7 +20,6 @@ const config = {
 const client = new line.Client(config)
 
 // create Express app
-// about Express itself: https://expressjs.com/
 const app = express()
 
 // register a webhook handler with middleware
@@ -32,7 +32,7 @@ app.post('/callback', line.middleware(config), (req, res) => {
       console.error(err)
       res.status(500).end()
     })
-});
+})
 
 // event handler
 async function handleEvent(event) {
@@ -40,25 +40,14 @@ async function handleEvent(event) {
     // ignore non-text-message event
     return Promise.resolve(null)
   }
-
-  const { data } = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: 'user',
-        content: '今後的對話中，請你扮演我的全能助理，而你的名字是 AI，你會替我分析我的問題並給我一些建議與答案，你必須用繁體中文，以及台灣用語來回覆我，這些規則不需要我重新再說明。'
-      },
-      {
-        role: 'user',
-        content: event.message.text,
-      }
-    ],
-    max_tokens: 500,
+  const completion = await openai.createCompletion({
+    model: "text-davinci-003",
+    prompt: event.message.text,
+    max_tokens: 200,
   })
-
+  console.log(completion.data.choices[0].text)
   // create a echoing text message
-  const [choices] = data.choices;
-  const echo = { type: 'text', text: choices.message.content.trim() || '抱歉，我沒有話可說了。' }
+  const echo = { type: 'text', text: completion.data.choices[0].text.trim() }
 
   // use reply API
   return client.replyMessage(event.replyToken, echo)
