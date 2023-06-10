@@ -61,11 +61,5 @@ app.listen(port, () => {
 
 
 
-// async function runCompletion() {
-//   const completion = await openai.createCompletion({
-//     model: "text-davinci-003",
-//     prompt: event.message.text
-//   })
-//   console.log(completion.data.choices[0].text)
-// }
+
 
